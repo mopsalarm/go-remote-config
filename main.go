@@ -26,8 +26,13 @@ var rules = []config.Rule{
 	{Key: "maxUploadSizePremium", Value: 12 * 1024 * 1024},
 	{Key: "searchUsingTagService", Value: false},
 	{Key: "secretSanta", Value: false},
+
 	{Key: "adType", Value: "NONE"},
-	// {Key: "adType", Value: "FEED", MinPercentile: 0.5, MaxPercentile: 1},
+	{Key: "adType", Value: "FEED", MinPercentile: 0, MaxPercentile: 0.2},
+	{Key: "adType", Value: "MAIN", MinPercentile: 0.2, MaxPercentile: 0.4},
+
+	{Key: "trackItemView", Value: false},
+	{Key: "trackItemView", Value: true, MaxPercentile: 0.1},
 }
 
 func main() {
