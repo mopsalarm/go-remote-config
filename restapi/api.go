@@ -37,6 +37,7 @@ func (api *RestApi) handleGetConfig(w http.ResponseWriter, request *http.Request
 	conf := config.Apply(api.rules, config.Context{
 		Version:    version,
 		DeviceHash: params.ByName("hash"),
+		Beta:       request.URL.Query().Get("beta") == "true",
 	})
 
 	WriteJSON(w, http.StatusOK, conf)

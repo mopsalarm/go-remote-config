@@ -21,18 +21,59 @@ import (
 )
 
 var rules = []config.Rule{
-	{Key: "extraCategories", Value: true},
-	{Key: "maxUploadSizeNormal", Value: 6 * 1024 * 1024},
-	{Key: "maxUploadSizePremium", Value: 12 * 1024 * 1024},
-	{Key: "searchUsingTagService", Value: false},
-	{Key: "secretSanta", Value: false},
+	{
+		Key:   "extraCategories",
+		Value: true,
+	},
+	{
+		Key:   "maxUploadSizeNormal",
+		Value: 6 * 1024 * 1024,
+	},
+	{
+		Key:   "maxUploadSizePremium",
+		Value: 12 * 1024 * 1024,
+	},
+	{
+		Key:   "searchUsingTagService",
+		Value: false,
+	},
+	{
+		Key:   "secretSanta",
+		Value: false,
+	},
 
-	{Key: "adType", Value: "NONE"},
-	{Key: "adType", Value: "FEED", MinPercentile: 0, MaxPercentile: 0.2},
-	{Key: "adType", Value: "MAIN", MinPercentile: 0.2, MaxPercentile: 0.4},
+	// configure ads
+	{
+		Key:   "adType",
+		Value: "NONE",
+	},
+	{
+		Key:         "adType",
+		Value:       "FEED",
+		Percentiles: []config.Range{{Min: 0, Max: 0.2}, {Min: 0.4, Max: 0.4 + 0.2}},
+	},
+	{
+		Key:         "adType",
+		Value:       "MAIN",
+		Percentiles: []config.Range{{Min: 0.2, Max: 0.4}, {Min: 0.7, Max: 0.7 + 0.2}},
+	},
+	// Disable ads for beta users.
+	//{
+	//	Key:   "adType",
+	//	Value: "NONE",
+	//	Beta:  true,
+	//},
 
-	{Key: "trackItemView", Value: false},
-	{Key: "trackItemView", Value: true, MaxPercentile: 0.1},
+	// track item views.
+	{
+		Key:   "trackItemView",
+		Value: false,
+	},
+	{
+		Key:         "trackItemView",
+		Value:       true,
+		Percentiles: []config.Range{{Max: 0.1}},
+	},
 }
 
 func main() {
