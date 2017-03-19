@@ -45,24 +45,14 @@ var rules = []config.Rule{
 	// configure ads
 	{
 		Key:   "adType",
+		Value: "MAIN",
+	},
+	{
+		// Disable ads for beta users.
+		Key:   "adType",
 		Value: "NONE",
+		Beta:  true,
 	},
-	{
-		Key:         "adType",
-		Value:       "FEED",
-		Percentiles: []config.Range{{Min: 0, Max: 0.2}, {Min: 0.4, Max: 0.4 + 0.2}},
-	},
-	{
-		Key:         "adType",
-		Value:       "MAIN",
-		Percentiles: []config.Range{{Min: 0.2, Max: 0.4}, {Min: 0.7, Max: 0.7 + 0.2}},
-	},
-	// Disable ads for beta users.
-	//{
-	//	Key:   "adType",
-	//	Value: "NONE",
-	//	Beta:  true,
-	//},
 
 	// track item views.
 	{
