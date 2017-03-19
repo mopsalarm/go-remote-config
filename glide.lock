@@ -1,8 +1,10 @@
-hash: c1e09cae6a37b8841294b1503fa406df7e6527de148397e50b4e6de2b4b8c32a
-updated: 2017-03-15T16:15:38.937422058+01:00
+hash: f36f04cf9596c87e9a38f68192a348caa8d22b98f5d972e5d76ea12ce863a297
+updated: 2017-03-19T16:23:51.202155692+01:00
 imports:
 - name: github.com/eSailors/go-datadog
   version: f50ae93817c978b64e625eb5da655d59250fc05c
+- name: github.com/goji/httpauth
+  version: 2da839ab0f4df05a6db5eb277995589dadbd4fb9
 - name: github.com/gorilla/handlers
   version: 3a5767ca75ece5f7f1440b1d16975247f8d8b221
 - name: github.com/jessevdk/go-flags

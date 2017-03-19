@@ -82,7 +82,8 @@ func main() {
 			Tags   string `long:"tags" value-name:"TAGS" description:"Comma separated list of tags to add to datadog metrics."`
 		} `namespace:"datadog" group:"Datadog metrics reporting"`
 
-		Verbose bool `short:"v" long:"verbose" description:"Enable verbose logging"`
+		AdminPassword string `long:"admin-password" value-name:"PWD" default:"admin" description:"Admin password to secure rule updates with."`
+		Verbose       bool   `short:"v" long:"verbose" description:"Enable verbose logging"`
 	}
 
 	parser := flags.NewParser(&opts, flags.Default)
@@ -104,7 +105,7 @@ func main() {
 
 	router := httprouter.New()
 
-	restapi.Setup(router, rules)
+	restapi.Setup(router, opts.AdminPassword, rules)
 
 	err = httpListen(opts.Http.Listen, opts.Http.AddressLog, router)
 	fatalOnError(err, "Could not start http server")
