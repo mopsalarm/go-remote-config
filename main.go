@@ -16,8 +16,10 @@ import (
 	"strings"
 	"time"
 
+	"encoding/json"
 	"github.com/mopsalarm/go-remote-config/config"
 	"github.com/mopsalarm/go-remote-config/restapi"
+	"strconv"
 )
 
 var rules = []config.Rule{
@@ -27,11 +29,11 @@ var rules = []config.Rule{
 	},
 	{
 		Key:   "maxUploadSizeNormal",
-		Value: 6 * 1024 * 1024,
+		Value: json.Number(strconv.Itoa(6 * 1024 * 1024)),
 	},
 	{
 		Key:   "maxUploadSizePremium",
-		Value: 12 * 1024 * 1024,
+		Value: json.Number(strconv.Itoa(12 * 1024 * 1024)),
 	},
 	{
 		Key:   "searchUsingTagService",
@@ -42,10 +44,10 @@ var rules = []config.Rule{
 		Value: false,
 	},
 
-	// configure ads
 	{
+		// enable feed ads for everyone by default.
 		Key:   "adType",
-		Value: "MAIN",
+		Value: "FEED",
 	},
 	{
 		// Disable ads for beta users.

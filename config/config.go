@@ -3,7 +3,10 @@ package config
 import (
 	"hash/fnv"
 	"math"
+	"time"
 )
+
+var EuropeBerlin = mustLoadLocation("Europe/Berlin")
 
 func Apply(rules []Rule, ctx Context) map[string]interface{} {
 	config := make(map[string]interface{})
@@ -35,6 +38,7 @@ type Rule struct {
 	// limit the version or user range this property applies to.
 	Versions    []Range
 	Percentiles []Range
+	Times       []Range
 
 	// if set, this rule only applies to beta users.
 	Beta bool
@@ -49,6 +53,13 @@ func (r *Rule) Matches(ctx Context) bool {
 	// check that the user is in the correct percentile
 	value := uniqueRandomValue(ctx.DeviceHash, r.Key)
 	if !containsValueOrEmpty(r.Percentiles, value) {
+		return false
+	}
+
+	// check that the time matches
+	now := time.Now().In(EuropeBerlin)
+	hourOfDay := float64(now.Hour()) + float64(now.Minute())/60.0
+	if !containsValueOrEmpty(r.Times, hourOfDay) {
 		return false
 	}
 
@@ -82,4 +93,13 @@ func containsValueOrEmpty(ranges []Range, value float64) bool {
 	}
 
 	return len(ranges) == 0
+}
+
+func mustLoadLocation(timezone string) *time.Location {
+	loc, err := time.LoadLocation("Europe/Berlin")
+	if err != nil {
+		panic(err)
+	}
+
+	return loc
 }
