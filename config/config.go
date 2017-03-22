@@ -28,20 +28,21 @@ type Context struct {
 }
 
 type Range struct {
-	Min, Max float64
+	Min float64 `json:"min"`
+	Max float64 `json:"max"`
 }
 
 type Rule struct {
-	Key   string
-	Value interface{}
+	Key   string      `json:"key"`
+	Value interface{} `json:"value"`
 
 	// limit the version or user range this property applies to.
-	Versions    []Range
-	Percentiles []Range
-	Times       []Range
+	Versions    []Range `json:"versions,omitempty"`
+	Percentiles []Range `json:"percentiles,omitempty"`
+	Times       []Range `json:"times,omitempty"`
 
 	// if set, this rule only applies to beta users.
-	Beta bool
+	Beta bool `json:"beta,omitempty"`
 }
 
 func (r *Rule) Matches(ctx Context) bool {
