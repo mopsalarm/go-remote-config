@@ -16,57 +16,10 @@ import (
 	"strings"
 	"time"
 
-	"encoding/json"
+	"fmt"
 	"github.com/mopsalarm/go-remote-config/config"
 	"github.com/mopsalarm/go-remote-config/restapi"
-	"strconv"
 )
-
-var rules = []config.Rule{
-	{
-		Key:   "extraCategories",
-		Value: true,
-	},
-	{
-		Key:   "maxUploadSizeNormal",
-		Value: json.Number(strconv.Itoa(6 * 1024 * 1024)),
-	},
-	{
-		Key:   "maxUploadSizePremium",
-		Value: json.Number(strconv.Itoa(12 * 1024 * 1024)),
-	},
-	{
-		Key:   "searchUsingTagService",
-		Value: false,
-	},
-	{
-		Key:   "secretSanta",
-		Value: false,
-	},
-
-	{
-		// enable feed ads for everyone by default.
-		Key:   "adType",
-		Value: "FEED",
-	},
-	{
-		// Disable ads for beta users.
-		Key:   "adType",
-		Value: "NONE",
-		Beta:  true,
-	},
-
-	// track item views.
-	{
-		Key:   "trackItemView",
-		Value: false,
-	},
-	{
-		Key:         "trackItemView",
-		Value:       true,
-		Percentiles: []config.Range{{Max: 0.1}},
-	},
-}
 
 func main() {
 	metrics.DefaultRegistry = metrics.NewPrefixedRegistry("pr0gramm.config.")
@@ -84,8 +37,10 @@ func main() {
 			Tags   string `long:"tags" value-name:"TAGS" description:"Comma separated list of tags to add to datadog metrics."`
 		} `namespace:"datadog" group:"Datadog metrics reporting"`
 
+		Config        string `long:"config" default:"config.json" description:"Path to json config file containing the rules for this service. The file will be overwritten if new rules are posted."`
 		AdminPassword string `long:"admin-password" value-name:"PWD" default:"admin" description:"Admin password to secure rule updates with."`
-		Verbose       bool   `short:"v" long:"verbose" description:"Enable verbose logging"`
+
+		Verbose bool `short:"v" long:"verbose" description:"Enable verbose logging"`
 	}
 
 	parser := flags.NewParser(&opts, flags.Default)
@@ -107,7 +62,10 @@ func main() {
 
 	router := httprouter.New()
 
-	restapi.Setup(router, opts.AdminPassword, rules)
+	rules, err := config.Load(opts.Config)
+	fatalOnError(err, "Could not load config from file at %s", err)
+
+	restapi.Setup(router, opts.AdminPassword, opts.Config, rules)
 
 	err = httpListen(opts.Http.Listen, opts.Http.AddressLog, router)
 	fatalOnError(err, "Could not start http server")
@@ -116,9 +74,9 @@ func main() {
 
 }
 
-func fatalOnError(err error, reason string) {
+func fatalOnError(err error, reason string, args ...interface{}) {
 	if err != nil {
-		log.Fatalf("%s: %s", reason, err)
+		log.Fatalf("%s: %s", fmt.Sprintf(reason, args), err)
 	}
 }
 

@@ -19,11 +19,14 @@ type Service interface {
 type RestApi struct {
 	lock  sync.RWMutex
 	rules []config.Rule
+
+	rulesConfigFile string
 }
 
-func Setup(router *httprouter.Router, password string, rules []config.Rule) {
+func Setup(router *httprouter.Router, password, rulesConfigFile string, rules []config.Rule) {
 	api := &RestApi{
-		rules: rules,
+		rules:           rules,
+		rulesConfigFile: rulesConfigFile,
 	}
 
 	router.GET("/version/:version/hash/:hash/config.json", metricWrap("config", api.handleGetConfig))
@@ -67,9 +70,18 @@ func (api *RestApi) handleGetRules(w http.ResponseWriter, request *http.Request,
 }
 
 func (api *RestApi) handlePutRules(w http.ResponseWriter, request *http.Request) {
+	decoder := json.NewDecoder(request.Body)
+	decoder.UseNumber()
+
 	var rules []config.Rule
-	if err := json.NewDecoder(request.Body).Decode(&rules); err != nil {
+	if err := decoder.Decode(&rules); err != nil {
 		WriteError(w, http.StatusBadRequest, errors.WithMessage(err, "Could not decode body."))
+		return
+	}
+
+	// write rules to file
+	if err := config.Persist(api.rulesConfigFile, rules); err != nil {
+		WriteError(w, http.StatusInternalServerError, errors.WithMessage(err, "Could not write rules to file."))
 		return
 	}
 
